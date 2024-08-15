@@ -10,8 +10,9 @@ def cli():
 
 
 # imports options
-from options.model_option import *
-from options.infrastructure_option import *
+# TODO: Pendiente por agregar la creación de modelos
+# from core.options.model_option import *
+from core.options.infrastructure_option import *
 
 if __name__ == '__main__':
     cli()

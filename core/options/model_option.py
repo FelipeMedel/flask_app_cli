@@ -1,6 +1,6 @@
 import click
 from main import cli
-from utilities.manage_json import read_json, write_json
+from core.utilities.manage_json import read_json, write_json
 
 
 @cli.command('get-models')

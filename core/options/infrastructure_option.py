@@ -1,7 +1,7 @@
 import click
 from main import cli
-from packages import Infrastructure
-from utilities.credits import Credits
+from core.packages import Infrastructure
+from core.utilities.credits import Credits
 
 
 @cli.command('new-project')
@@ -16,10 +16,4 @@ def new_project(name, root, template):
     project.create_project_dir()
     project.create_all_dir()
     Credits(title=name).get_finish_project()
-
-
-@cli.command('add-config')
-def config_app():
-    pass
-
 

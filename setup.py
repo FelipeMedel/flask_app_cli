@@ -2,18 +2,32 @@ from setuptools import setup, find_packages
 
 readme = open('./README.md', 'r')
 
+VERSION = '0.0.1'
+DESCRIPTION = 'Generador de proyectos de Python con Flask'
+PACKAGE_NAME = 'Package Name'
+AUTHOR = 'Felipe Medel'
+EMAIL = 'luispipemedel@gmail.com'
+GITHUB_URL = ''
+
 setup(
     name='flask_app_cli',
-    version='0.0.1',
-    description='Generador de proyectos de Python con Flask',
+    version=VERSION,
+    description=DESCRIPTION,
     long_description=readme.read(),
     long_description_content_type='text/markdown',
-    author='Felipe Medel',
-    author_email='luispipemedel@gmail.com',
+    author=AUTHOR,
+    author_email=EMAIL,
     packages=find_packages(),
     py_modules=['main'],
     install_requires=['click', 'colorama'],
     keywords=['flask', 'flask-cli', 'flask-app-cli', 'generate flask app'],
     license='MIT',
     include_package_data=True,
+    classifiers=[
+        'Development Status :: 3 - Alpha',  # Estados del paquete "3 - Alpha", "4 - Beta", "5 - Production/Stable"
+        'Intended Audience :: Developers',
+        'Topic :: Software Development :: Build Tools',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
+    ],
 )
