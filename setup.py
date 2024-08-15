@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 readme = open('./README.md', 'r')
 
 VERSION = '0.0.1'
-DESCRIPTION = 'Generador de proyectos de Python con Flask'
+DESCRIPTION = 'Generador de proyectos de Python utilizando el framework Flask, por medio de la terminal.'
 PACKAGE_NAME = 'Package Name'
 AUTHOR = 'Felipe Medel'
 EMAIL = 'luispipemedel@gmail.com'
