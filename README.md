@@ -74,10 +74,14 @@ Y debajo, encontrarás unos pasos para ejecutar el proyecto generado.
     ```
  
 3. Activar el entorno virtual: (Windows)
-
     ```bash
     .venv/Scripts/activate
     ```
+   3.1 Activar el entorno virtual: (Linux, Mac):
+      ```bash
+      source .venv/bin/activate
+      ```
+   
 4. Instalar las dependencias:
     ```bash
     pip install -r requirements.txt
