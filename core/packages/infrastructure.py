@@ -87,7 +87,7 @@ class Infrastructure:
         if is_project:
             print(Fore.BLUE + f'El proyecto {path} se a creado correctamente!')
         else:
-            print(Fore.GREEN + 'Se creó el siguiente directorio en el proyecto' + Fore.WHITE + path)
+            print(Fore.GREEN + 'Se creó el siguiente directorio en el proyecto ' + Fore.WHITE + path)
             if self.__with_files:
                 self.create_file_empty(path=path)
 
@@ -95,7 +95,7 @@ class Infrastructure:
         if path == '':
             path = self.__root_name
         open(f'{path}/{file_name}', "w").close()
-        print(Fore.GREEN + 'Se ha creado el siguiente archivo.' + Fore.WHITE + f'{path}/{file_name}')
+        print(Fore.GREEN + 'Se ha creado el siguiente archivo. ' + Fore.WHITE + f'{path}/{file_name}')
 
     def write_file(self, path: str = '', content: str = ''):
         if path == '':

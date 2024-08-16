@@ -1,6 +1,6 @@
 # Flask APP CLI
 
-Paquete de ayuda para la creacion de proyectos Backend de Python con Flask, 
+Paquete de ayuda para la creación de proyectos Backend de Python con Flask, 
 siguiendo una arquitectura de directorios recomendada.
 
 ## Tener en cuenta antes de utilizar:
@@ -14,9 +14,9 @@ y ejecutar el comando ```new-project``` para crear el directorio principal de tu
 proyecto, se debe ejecutar de la siguiente manera:
 
 ```bash
-flask-app-cli new-project --name testPython
+python .\main.py  new-project --name testPython
 ```
-### Parametros adicionales
+### Parámetros adicionales
 
 * **--name** Etiqueta para asignar el nombre del proyecto
 * **--root** Etiqueta para asignar el nombre del directorio root de la aplicación, por defecto es ```app```
@@ -24,11 +24,11 @@ flask-app-cli new-project --name testPython
 
 ## Estructura de directorios del proyecto
 
-Dentro de la estructura de directorios, se crean los archivos ```__init__.py```, como tambien
-el archivo ```.env```, los archivos ```run.py``` y ```wsgi.py```, el archivo de configuracion 
-de la aplicacion y ajustes iniciales para la base de datos.
+Dentro de la estructura de directorios, se crean los archivos ```__init__.py```, como también
+el archivo ```.env```, los archivos ```run.py``` y ```wsgi.py```, el archivo de configuración 
+de la aplicación y ajustes iniciales para la base de datos.
 
-Una vez se ejecute el comando, recibirá informacion correspondiente al proceso realizado 
+Una vez se ejecute el comando, recibirá información correspondiente al proceso realizado 
 y a las acciones ejecutadas:
 
 ```text
@@ -39,7 +39,7 @@ Se ha creado el siguiente archivo../testPython/src/run.py
 El archivo ./testPython/src/run.py fue modificado!
 ...
 ```
-Como tambien al final el proceso una recomendacion:
+Como también al final el proceso una recomendación:
 
 ```text
 Recomendación:
@@ -52,28 +52,49 @@ acabas de generar.
 
 > Tener en cuenta: el proyecto generado cuenta con una estructura de carpetas o directorios,
 > no quiere decir, que deba seguir el desarrollo de su proyecto con la estructura generada,
-> Puede utilizarla si lo desea, en caso contrario, sientase libre de modificar la estructura 
+> Puede utilizarla si lo desea, en caso contrario, siéntase libre de modificar la estructura 
 > (Agregar, Modificar, Eliminar) según la necesidad de su proyecto.
 
-Y por ultimo, el proceso para correr el proyecto generado:
+Y por último, el proceso para correr el proyecto generado, verás el siguiente mensaje:
 
 ```text
 El proceso de creación del proyecto testPython finalizó correctamente!
-
-Acceda a la raíz del proyecto:
-cd testPython
-Crear el entorno virtual: (Recuerda agregar este directorio en el archivo .gitignore)
-python -m venv .venv
-Activar el entorno virtual: (Windows)
-.venv/Scripts/activate
-Instalar las dependencias:
-pip install -r requirements.txt
 ```
+Y debajo, encontrarás unos pasos para ejecutar el proyecto generado.
+
+### Pasos de construcción y ejecución
+
+1. Acceda a la raíz del proyecto:
+    ```bash
+    cd testPython
+    ```
+2. Crear el entorno virtual: (Recuerda agregar este directorio en el archivo ```.gitignore```)
+    ```bash
+    python -m venv .venv
+    ```
+ 
+3. Activar el entorno virtual: (Windows)
+
+    ```bash
+    .venv/Scripts/activate
+    ```
+4. Instalar las dependencias:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+5. Ejecutar la aplicación:
+   ```bash
+   python ./src/run.py
+   ```
+
+6. El proyecto se ejecutará en: ```http://127.0.0.1:5000```
+
 ## Al finalizar los pasos, debera tener en cuenta lo siguiente:
 
 * El proyecto corre en por defecto en el host: ```127.0.0.1```
 * El proyecto corre en por defecto en el puerto: ```5000```
-* Al ejecutar el proyecto y llamar al servicio raiz este le devolvera un json de esta forma
+* Al ejecutar el proyecto y llamar al servicio raíz este le devolverá un json de esta forma
   ```json
   {
     "ok": true,

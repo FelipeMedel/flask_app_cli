@@ -4,7 +4,7 @@ from core.packages import Infrastructure
 from core.utilities.credits import Credits
 
 
-@cli.command('new-project')
+@cli.command('new-project', help='Generate a new project of Python with Flask')
 @click.option('--name', required=True, help='Project name')
 @click.option('--root', required=False, default='app', help='root dir (Default app)')
 @click.option('--template', required=False, type=bool, default=True, help='use a functional template (Default True)')

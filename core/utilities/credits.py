@@ -34,3 +34,7 @@ class Credits:
                 print(Back.CYAN + Style.BRIGHT + "source .venv/bin/activate")
             print(Fore.YELLOW + 'Instalar las dependencias:')
             print(Back.CYAN + Style.BRIGHT + "pip install -r requirements.txt")
+            print(Fore.YELLOW + 'Ejecutar la aplicación:')
+            print(Back.CYAN + Style.BRIGHT + "python ./src/run.py")
+            print(Fore.YELLOW + 'El proyecto se ejecutará en: ' + Back.CYAN + Style.BRIGHT + "http://127.0.0.1:5000")
+
