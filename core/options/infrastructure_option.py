@@ -12,7 +12,7 @@ def new_project(name, root, template):
     if not name:
         click.Abort("Please provide all required arguments: Project name (--name)")
 
-    project = Infrastructure(project_name=name, root=root)
+    project = Infrastructure(project_name=name, root=root, with_files=template)
     project.create_project_dir()
     project.create_all_dir()
     Credits(title=name).get_finish_project()

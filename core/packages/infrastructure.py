@@ -11,18 +11,18 @@ class Infrastructure:
 
     def __init__(self, project_name: str, root: str = 'app', with_files: bool = True):
         self.__project_name = project_name
-        self.__root_name = f'./{project_name}/src'
+        self.__root_name = f'{project_name}/src'
         self.__root = root
         self.__with_files = with_files
         self.__DEFAULT_ROUTES = [
-            f'./{self.__root_name}/{self.__root}/blueprints',
-            f'./{self.__root_name}/{self.__root}/controllers',
-            f'./{self.__root_name}/{self.__root}/decorators',
-            f'./{self.__root_name}/{self.__root}/middlewares',
-            f'./{self.__root_name}/{self.__root}/models',
-            f'./{self.__root_name}/{self.__root}/schemas',
-            f'./{self.__root_name}/{self.__root}/services',
-            f'./{self.__root_name}/{self.__root}/utilities'
+            f'{self.__root_name}/{self.__root}/blueprints',
+            f'{self.__root_name}/{self.__root}/controllers',
+            f'{self.__root_name}/{self.__root}/decorators',
+            f'{self.__root_name}/{self.__root}/middlewares',
+            f'{self.__root_name}/{self.__root}/models',
+            f'{self.__root_name}/{self.__root}/schemas',
+            f'{self.__root_name}/{self.__root}/services',
+            f'{self.__root_name}/{self.__root}/utilities'
         ]
 
     def create_project_dir(self):
@@ -52,22 +52,27 @@ class Infrastructure:
                             content=ApplicationTemplate(develop=False).get_content_run())
 
         # Add settings dir
-        if not os.path.isdir(f'./{self.__root_name}/settings'):
+        if not os.path.isdir(f'{self.__root_name}/settings'):
             self.create_config_dir()
 
         # Add root application dir
-        if not os.path.exists(f'./{self.__root_name}/{self.__root}'):
-            self.create_dir(path=f'./{self.__root_name}/{self.__root}')
-            open(f'./{self.__root_name}/{self.__root}/__init__.py', "w").close()
+        if not os.path.exists(f'{self.__root_name}/{self.__root}'):
+            self.create_dir(path=f'{self.__root_name}/{self.__root}')
+            open(f'{self.__root_name}/{self.__root}/__init__.py', "w").close()
             # writer __init__ application
-            self.write_file(path=f'./{self.__root_name}/{self.__root}/__init__.py',
+            self.write_file(path=f'{self.__root_name}/{self.__root}/__init__.py',
                             content=ApplicationTemplate().get_content_application())
+
+        # Add documentation dir
+        if not os.path.exists(f'{self.__root_name}/documentation'):
+            self.create_documentation_dir()
+
+        # Add .env file
+        self.create_env_file()
+        self.create_requirement_file()
 
         # Add subdirectories on root application
         if self.__with_files:
-            # Add .env file
-            self.create_env_file()
-            self.create_requirement_file()
             # Add init package dir
             for route in self.__DEFAULT_ROUTES:
                 if not os.path.exists(route):
@@ -101,7 +106,7 @@ class Infrastructure:
         print(Fore.WHITE + 'El archivo ' + Fore.GREEN + f'{path}' + Fore.WHITE + ' fue modificado!')
 
     def create_config_dir(self):
-        setting_dir = f'./{self.__root_name}/settings'
+        setting_dir = f'{self.__root_name}/settings'
         os.mkdir(setting_dir)
         print(Fore.GREEN + 'El directorio settings fue creado!')
         self.create_file_empty(path=setting_dir)
@@ -109,3 +114,8 @@ class Infrastructure:
         self.create_file_empty(path=setting_dir, file_name='config.py')
         self.write_file(path=f'{setting_dir}/config.py', content=ConfigTemplate().get_content_file())
 
+    def create_documentation_dir(self):
+        setting_dir = f'{self.__root_name}/documentation'
+        os.mkdir(setting_dir)
+        print(Fore.GREEN + 'El directorio documentation fue creado!')
+        self.create_file_empty(path=setting_dir, file_name='apidoc.json')

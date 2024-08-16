@@ -20,6 +20,7 @@ flask-app-cli new-project --name testPython
 
 * **--name** Etiqueta para asignar el nombre del proyecto
 * **--root** Etiqueta para asignar el nombre del directorio root de la aplicación, por defecto es ```app```
+* **--template** Etiqueta para generar el proyecto con estructura completa o no, por defecto es ```true```
 
 ## Estructura de directorios del proyecto
 
