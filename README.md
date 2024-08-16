@@ -18,9 +18,9 @@ python .\main.py  new-project --name testPython
 ```
 ### Parámetros adicionales
 
-* **--name** Etiqueta para asignar el nombre del proyecto
-* **--root** Etiqueta para asignar el nombre del directorio root de la aplicación, por defecto es ```app```
-* **--template** Etiqueta para generar el proyecto con estructura completa o no, por defecto es ```true```
+* **--name** (Requerido) Etiqueta para asignar el nombre del proyecto
+* **--root** (Opcional) Etiqueta para asignar el nombre del directorio root de la aplicación, por defecto es ```app```
+* **--template** (Opcional) Etiqueta para generar el proyecto con estructura completa o no, por defecto es ```true```
 
 ## Estructura de directorios del proyecto
 
