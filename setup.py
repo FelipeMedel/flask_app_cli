@@ -7,7 +7,7 @@ DESCRIPTION = 'Generador de proyectos de Python utilizando el framework Flask, p
 PACKAGE_NAME = 'Package Name'
 AUTHOR = 'Felipe Medel'
 EMAIL = 'luispipemedel@gmail.com'
-GITHUB_URL = ''
+GITHUB_URL = 'https://github.com/FelipeMedel/flask_app_cli'
 
 setup(
     name='flask_app_cli',
@@ -19,7 +19,7 @@ setup(
     author_email=EMAIL,
     packages=find_packages(),
     py_modules=['main'],
-    install_requires=['click', 'colorama'],
+    install_requires=['click', 'colorama', 'pyfiglet'],
     keywords=['flask', 'flask-cli', 'flask-app-cli', 'generate flask app'],
     license='MIT',
     include_package_data=True,
@@ -30,4 +30,8 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
     ],
+    entry_points='''
+        [console_scripts]
+        flask_app_cli=main:cli
+    '''
 )

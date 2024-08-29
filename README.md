@@ -5,22 +5,31 @@ siguiendo una arquitectura de directorios recomendada.
 
 ## Tener en cuenta antes de utilizar:
 
-> El paquete fue desarrollado en una versión de Python 3.11 y testeado con versiones anteriores
+> El paquete fue desarrollado en una versión de Python 3.11
 
 ## Como funciona
 
-Basta con instalar el paquete de ```flask-app-cli``` de manera global en tu sistema 
-y ejecutar el comando ```new-project``` para crear el directorio principal de tu 
-proyecto, se debe ejecutar de la siguiente manera:
+1. Clona el repositorio
+2. Ubicáte en la raíz del proyecto y ejecuta el siguiente comando
+   ```bash
+   pip install --editable .
+   ```
+   En caso de no funcionar el comando anterior, ejecuta el setup con el comando ```python```
+   ```bash
+   python setup.py
+   ```
+De esta manera, se habrá instalado el paquete de ```flask-app-cli``` de manera global en tu sistema.
+Para hacer uso del paquete debes usar siempre el comando ```flask_app_cli```.
+
+Por ejemplo, para crear un proyecto nuevo, debes ejecutar el siguiente comando:
 
 ```bash
-python .\main.py  new-project --name testPython
+flask_app_cli  new-project --name testPython
 ```
 ### Parámetros adicionales
 
 * **--name** (Requerido) Etiqueta para asignar el nombre del proyecto
 * **--root** (Opcional) Etiqueta para asignar el nombre del directorio root de la aplicación, por defecto es ```app```
-* **--template** (Opcional) Etiqueta para generar el proyecto con estructura completa o no, por defecto es ```true```
 
 ## Estructura de directorios del proyecto
 
