@@ -1,12 +1,15 @@
 
 class RequirementTemplate:
 
-    def __init__(self):
+    def __init__(self, with_db: bool = False):
         self.__DEPENDENCIES = [
             'Flask',
             'Flask-Cors',
             'python-dotenv'
         ]
+        if with_db:
+            self.__DEPENDENCIES.append('sqlalchemy')
+            self.__DEPENDENCIES.append('PyMySQL')
 
     def load_dependencies(self):
         response = ''

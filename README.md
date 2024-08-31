@@ -24,12 +24,14 @@ Para hacer uso del paquete debes usar siempre el comando ```flask_app_cli```.
 Por ejemplo, para crear un proyecto nuevo, debes ejecutar el siguiente comando:
 
 ```bash
-flask_app_cli  new-project --name testPython
+flask_app_cli  new --name <name_project>
 ```
 ### Parámetros adicionales
 
 * **--name** (Requerido) Etiqueta para asignar el nombre del proyecto
-* **--root** (Opcional) Etiqueta para asignar el nombre del directorio root de la aplicación, por defecto es ```app```
+* **--root** (Opcional) Etiqueta para asignar el nombre del directorio root de la aplicación ```por defecto: app```
+* **--database** (Opcional) Etiqueta para crear la configuración de base de datos ```por defecto: false```
+* **--multitenant** (Opcional) Etiqueta para configurar multiple base de datos ```por defecto: false```
 
 ## Estructura de directorios del proyecto
 
@@ -48,7 +50,7 @@ Se ha creado el siguiente archivo../testPython/src/run.py
 El archivo ./testPython/src/run.py fue modificado!
 ...
 ```
-Como también al final el proceso una recomendación:
+Como también al final del proceso, recibirán una recomendación:
 
 ```text
 Recomendación:

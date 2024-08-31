@@ -1,11 +1,15 @@
 
 class ConfigTemplate:
 
-    def __init__(self):
+    def __init__(self, with_db: bool = False, multitenant: bool = False):
         self.__content_init = 'from .config import get_environment\n'
         self.content = 'import os\n'
+        self.multitenant = multitenant
+        self.with_db = with_db
 
     def get_content_import_file(self):
+        if self.with_db and self.multitenant:
+            self.__content_init += 'from .db_tenants import DBTenant\n'
         return self.__content_init
     
     def get_content_file(self):
@@ -19,6 +23,18 @@ class ConfigTemplate:
         self.content += '\tDB_PASS = os.getenv("DB_PASS")\n'
         self.content += '\tDB_HOST = os.getenv("DB_HOST")\n'
         self.content += '\tDB_PORT = os.getenv("DB_PORT")\n'
+        if self.with_db and not self.multitenant:
+            self.content += '\tmysql_uri = "mysql+pymysql://{user}:{password}@{host}:{port}/{db}?charset=utf8".format(\n'
+            self.content += '\t\tuser=DB_USER,\n'
+            self.content += '\t\tpassword=DB_PASS,\n'
+            self.content += '\t\thost=DB_HOST,\n'
+            self.content += '\t\tport=DB_PORT,\n'
+            self.content += '\t\tdb=DB_NAME)\n'
+            self.content += '\tSQLALCHEMY_DATABASE_URI = mysql_uri\n'
+        elif self.with_db and self.multitenant:
+            self.content += '\tSQLALCHEMY_TRACK_MODIFICATIONS = False\n'
+            self.content += '\tSQLALCHEMY_BINDS = dict()\n'
+            self.content += '\tSQLALCHEMY_COMMIT_ON_TEARDOWN = True\n'
         self.content += '\n\n'
         self.content += 'class DevelopConfig(DBConfig):\n'
         self.content += '\tAPP_NAME = os.getenv("APP_NAME")\n'

@@ -20,13 +20,11 @@ def cli():
 def info():
     f = Figlet(font='slant', justify='center')
     print(f.renderText(APP_NAME))
-    print(f'Version: {APP_VERSION}\nDeveloped by {APP_DEVELOPER}')
+    print(f'Version {APP_VERSION}\nDeveloped by {APP_DEVELOPER}')
     print(f'Repository {APP_REPOSITORY}')
 
 
 # imports options
-# TODO: Pendiente por agregar la creación de modelos
-# from core.options.model_option import *
 from core.options.infrastructure_option import *
 
 

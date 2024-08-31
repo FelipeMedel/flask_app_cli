@@ -1,11 +1,12 @@
 class EnvTemplate:
 
-    def __init__(self):
+    def __init__(self, with_db: bool = False):
         self.__APP_NAME = 'APPLICATION NAME'
         self.__HOST = '127.0.0.1'
         self.__PORT = 5000
         self.__DEBUG = True
         self.__SECRET_KEY = 'SECRET KEY'
+        self.with_db = with_db
         self.__DB_NAME = 'DATABASE NAME'
         self.__DB_USER = 'USERNAME'
         self.__DB_PASS = 'PASSWORD'
@@ -22,14 +23,15 @@ class EnvTemplate:
         text += f'APP_DEBUG={int(self.__DEBUG)}\n'
         text += f'APP_SECRET_KEY="{self.__SECRET_KEY}"\n'
         text += '\n'
-        text += '# ========================\n'
-        text += '# database variables\n'
-        text += '# ========================\n'
-        text += f'DB_NAME="{self.__DB_NAME}"\n'
-        text += f'DB_USER="{self.__DB_USER}"\n'
-        text += f'DB_PASS="{self.__DB_PASS}"\n'
-        text += f'DB_HOST={self.__DB_HOST}\n'
-        text += f'DB_PORT={self.__DB_PORT}\n'
+        if self.with_db:
+            text += '# ========================\n'
+            text += '# database variables\n'
+            text += '# ========================\n'
+            text += f'DB_NAME="{self.__DB_NAME}"\n'
+            text += f'DB_USER="{self.__DB_USER}"\n'
+            text += f'DB_PASS="{self.__DB_PASS}"\n'
+            text += f'DB_HOST={self.__DB_HOST}\n'
+            text += f'DB_PORT={self.__DB_PORT}\n'
         return text
 
     def get_values(self):
