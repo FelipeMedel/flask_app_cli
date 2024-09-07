@@ -69,7 +69,7 @@ acabas de generar.
 Y por último, el proceso para correr el proyecto generado, verás el siguiente mensaje:
 
 ```text
-El proceso de creación del proyecto testPython finalizó correctamente!
+El proceso de creación del proyecto <name_project> finalizó correctamente!
 ```
 Y debajo, encontrarás unos pasos para ejecutar el proyecto generado.
 
@@ -77,7 +77,7 @@ Y debajo, encontrarás unos pasos para ejecutar el proyecto generado.
 
 1. Acceda a la raíz del proyecto:
     ```bash
-    cd testPython
+    cd <name_project>
     ```
 2. Crear el entorno virtual: (Recuerda agregar este directorio en el archivo ```.gitignore```)
     ```bash
@@ -138,6 +138,12 @@ El siguiente comando se debe ejecutar dentro de la carpeta ```documentation```
 ```bash
 apidoc -i api_documentation -o dist -f ".*\\.py$" --debug
 ```
+
+## Creación de modelos
+
+Pendiente por agregar la documentación pertinente para la creación de modelos de migración y
+generación de los modelos en el proyecto con SQLAlchemy
+
 
 Listo, ya puedes continuar con tu desarrollo.
 
