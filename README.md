@@ -110,11 +110,34 @@ Y debajo, encontrarás unos pasos para ejecutar el proyecto generado.
 * El proyecto corre en por defecto en el host: ```127.0.0.1```
 * El proyecto corre en por defecto en el puerto: ```5000```
 * Al ejecutar el proyecto y llamar al servicio raíz este le devolverá un json de esta forma
-  ```json
+```json
   {
     "ok": true,
     "message": "Hola Mundo!"
   }
-  ```
+```
+
+También puedes realizar la petición a la siguiente ruta: ```http://127.0.0.1:5000/api/v1/test``` esto
+debe arrojar la siguiente respuesta:
+```json
+  {
+    "ok": true,
+    "message": "Testing blueprint - Flask App Cli!"
+  }
+```
+Lo que indicará que el registro de rutas por medio de Blueprints funciona correctamente.
+
+## Construir la documentación del API 
+
+Requisitos para generar la documentación:
+
+* Tener instalado [ApiDoc](https://apidocjs.com/) 
+
+El siguiente comando se debe ejecutar dentro de la carpeta ```documentation```
+
+```bash
+apidoc -i api_documentation -o dist -f ".*\\.py$" --debug
+```
+
 Listo, ya puedes continuar con tu desarrollo.
 

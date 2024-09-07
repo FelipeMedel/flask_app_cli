@@ -25,7 +25,7 @@ def info():
 
 
 # imports options
-from core.options.infrastructure_option import *
+from core.options import *
 
 
 if __name__ == '__main__':

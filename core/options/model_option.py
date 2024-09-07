@@ -1,64 +1,36 @@
 import click
 from main import cli
-from core.utilities.manage_json import read_json, write_json
+from core.packages import Model
+from core.utilities import Credits, CommandMessage
+
+command_txt = CommandMessage()
 
 
-@cli.command('get-models')
-def get_models():
-    data = read_json()
-    for model in data:
-        text = f"""============================\nTable: {model}\n============================"""
-        print(text)
-        for field in data[model]:
-            print(field)
+@cli.command('get-models', help=command_txt.get_command_text('getModels'))
+@click.option('--tablename', '-t', required=True, help=command_txt.get_command_text('tableName'))
+@click.option('--all', '-a', required=True, help=command_txt.get_command_text('allModels'))
+def get_models(tablename, all):
+    if not tablename:
+        click.Abort(command_txt.get_error_message('name'))
+    Model(table_name=tablename).show_migration_models(_all=all)
 
 
-@cli.command('get-model')
-@click.option('--tablename', required=True, help='table name')
-def get_model_by_name(tablename):
-    data = read_json()
-    if tablename in data:
-        text = f"""============================\nTable: {tablename}\n============================"""
-        print(text)
-        for field in data[tablename]:
-            print(field)
-    else:
-        print(f'Table {tablename} not found')
-
-
-@cli.command('new-model')
-@click.option('--tablename', required=True, help='table name')
-@click.option('--key', required=True, help='Column name')
-@click.option('--primary', required=False, help='optional, if the field is a primary key')
-@click.option('--type', required=True, help='column type, varchar(20) or int...')
-@click.option('--nullable', required=True, help='indicates if the column allows null values. (True or False)')
-@click.option('--default', required=False, help='indicates the default value of the field')
-@click.option('--comment', required=False, help='Allows you to add a comment to the field')
+@cli.command('new-model', help=command_txt.get_command_text('newModel'))
+@click.option('--tablename', required=True, help=command_txt.get_command_text('tableName'))
+@click.option('--key', required=True, help=command_txt.get_command_text('key'))
+@click.option('--primary', required=False, type=bool, help=command_txt.get_command_text('primary'))
+@click.option('--type', required=True, help=command_txt.get_command_text('type'))
+@click.option('--nullable', required=True, type=bool, help=command_txt.get_command_text('nullable'))
+@click.option('--default', required=False, help=command_txt.get_command_text('nullable'))
+@click.option('--comment', required=False, help=command_txt.get_command_text('comment'))
 def new_model(tablename, key, primary, type, nullable, default, comment):
     if not tablename or not key or not type or not nullable:
-        click.Abort("Please provide all required arguments (table_name, key, type, nullable)")
-    else:
-        data = read_json()
+        click.Abort("Please provide all required arguments (--tablename, --key, --type, --nullable)")
 
-        new_table = {
-            "key": key,
-            "primary": primary,
-            "type": type,
-            "nullable": nullable,
-            "default": default,
-            "comment": comment
-        }
-        is_exist = False
-        for model in data:
-            if tablename in model:
-                is_exist = True
-                break
-        if is_exist:
-            data[tablename].append(new_table)
-        else:
-            result = {
-                tablename: [new_table]
-            }
-            data.update(result)
-        write_json(data)
-        click.echo(f"New field added: {key} on table: {tablename}")
+    Model(table_name=tablename).create_migration_model(key=key,
+                                                       primary=primary,
+                                                       _type=type,
+                                                       nullable=nullable,
+                                                       default=default,
+                                                       comment=comment)
+    click.echo(f"New field added: {key} on table: {tablename}")

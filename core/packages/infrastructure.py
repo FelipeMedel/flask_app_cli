@@ -5,7 +5,8 @@ from .assets import (EnvTemplate,
                      RequirementTemplate,
                      ConfigTemplate,
                      ApplicationTemplate,
-                     DatabaseTemplate)
+                     DatabaseTemplate,
+                     DocumentationTemplate)
 
 
 class Infrastructure:
@@ -64,8 +65,8 @@ class Infrastructure:
     def __write_file(self, path: str = '', content: str = ''):
         if path == '':
             path = self.__root_name
-        with open(f'{path}', "w") as f:
-            f.write(content)
+        with open(f'{path}', "w", encoding='utf-8') as f:
+            f.write(content.encode('utf-8').decode())
             f.close()
         print(Fore.WHITE + 'El archivo ' + Fore.GREEN + f'{path}' + Fore.WHITE + ' fue modificado!')
 
@@ -80,10 +81,15 @@ class Infrastructure:
                           .get_content_file())
 
     def __create_documentation_dir(self):
-        setting_dir = f'{self.__root_name}/documentation'
-        os.mkdir(setting_dir)
+        doc_dir = f'{self.__root_name}/documentation'
+        os.mkdir(doc_dir)
         print(Fore.GREEN + 'El directorio documentation fue creado!')
-        self.__create_file_empty(path=setting_dir, file_name='apidoc.json')
+        doc_template = DocumentationTemplate(project_name=self.__project_name, root=self.__root)
+        self.__write_file(path=f'{doc_dir}/apidoc.json', content=doc_template.get_content_apidoc_json())
+        self.__write_file(path=f'{doc_dir}/header.md', content=doc_template.get_content_header_md())
+        self.__create_dir(path=f'{doc_dir}/api_documentation', is_project=False)
+        self.__write_file(path=f'{doc_dir}/api_documentation/endpoints.py', content=doc_template.get_content_endpoint_test())
+        self.__write_file(path=f'{doc_dir}/header.md', content=doc_template.get_content_header_md())
 
     def __create_config_files_multitenant(self):
         database_dir = f'{self.__root_name}/database'
@@ -110,12 +116,13 @@ class Infrastructure:
             self.__create_config_dir()
 
         # Add root application dir
+        application = ApplicationTemplate(with_sql=self.__with_db, multitenant=self.__multitenant)
         if not os.path.exists(f'{self.__root_name}/{self.__root}'):
             self.__create_dir(path=f'{self.__root_name}/{self.__root}')
             open(f'{self.__root_name}/{self.__root}/__init__.py', "w").close()
             # writer __init__ application
             self.__write_file(path=f'{self.__root_name}/{self.__root}/__init__.py',
-                              content=ApplicationTemplate().get_content_application())
+                              content=application.get_content_application())
 
         # Add documentation dir
         if not os.path.exists(f'{self.__root_name}/documentation'):
@@ -137,3 +144,22 @@ class Infrastructure:
                 if not os.path.exists(route):
                     self.__create_dir(path=route)
                     open(f'{route}/__init__.py', "w").close()
+                    if 'controllers' in route:
+                        self.__create_dir(path=f'{route}/api')
+                        self.__write_file(path=f'{route}/api/__init__.py',
+                                          content='from . import test_controller')
+                    elif 'middlewares' in route:
+                        import_content = 'from . import error_handler_middleware\n'
+                        if self.__multitenant and self.__with_db:
+                            import_content += 'from . import tenant_middleware\n'
+                            self.__write_file(path=f'{route}/tenant_middleware.py', content=application.get_content_middleware_tenant())
+                        self.__write_file(path=f'{route}/__init__.py', content=import_content)
+                        self.__write_file(path=f'{route}/error_handler_middleware.py', content=application.get_content_middleware_error())
+
+            # writer api blueprint
+            self.__write_file(path=f'{self.__root_name}/{self.__root}/blueprints/api_bp.py',
+                              content=application.get_content_blueprint_file())
+
+            # writer controller test
+            self.__write_file(path=f'{self.__root_name}/{self.__root}/controllers/api/test_controller.py',
+                              content=application.get_content_controller_test())

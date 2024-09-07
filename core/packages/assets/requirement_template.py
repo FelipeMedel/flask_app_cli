@@ -10,6 +10,7 @@ class RequirementTemplate:
         if with_db:
             self.__DEPENDENCIES.append('sqlalchemy')
             self.__DEPENDENCIES.append('PyMySQL')
+            self.__DEPENDENCIES.append('Flask-SQLAlchemy')
 
     def load_dependencies(self):
         response = ''
