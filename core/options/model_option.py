@@ -8,10 +8,10 @@ command_txt = CommandMessage()
 
 @cli.command('get-models', help=command_txt.get_command_text('getModels'))
 @click.option('--tablename', '-t', required=True, help=command_txt.get_command_text('tableName'))
-@click.option('--all', '-a', required=True, help=command_txt.get_command_text('allModels'))
+@click.option('--all', '-a', required=False, default=True, help=command_txt.get_command_text('allModels'))
 def get_models(tablename, all):
     if not tablename:
-        click.Abort(command_txt.get_error_message('name'))
+        click.Abort(command_txt.get_error_message('tableName'))
     Model(table_name=tablename).show_migration_models(_all=all)
 
 
@@ -25,7 +25,7 @@ def get_models(tablename, all):
 @click.option('--comment', required=False, help=command_txt.get_command_text('comment'))
 def new_model(tablename, key, primary, type, nullable, default, comment):
     if not tablename or not key or not type or not nullable:
-        click.Abort("Please provide all required arguments (--tablename, --key, --type, --nullable)")
+        click.Abort(command_txt.get_error_message('required') + " (--tablename, --key, --type, --nullable)")
 
     Model(table_name=tablename).create_migration_model(key=key,
                                                        primary=primary,
@@ -33,4 +33,12 @@ def new_model(tablename, key, primary, type, nullable, default, comment):
                                                        nullable=nullable,
                                                        default=default,
                                                        comment=comment)
-    click.echo(f"New field added: {key} on table: {tablename}")
+    click.echo(command_txt.get_model_message(command='addField', **{'field': key, 'table': tablename}))
+
+
+@cli.command('load-model', help=command_txt.get_command_text('loadModel'))
+@click.option('--generate', '-g', required=False, type=bool, default=False,
+              help=command_txt.get_command_text('generate'))
+def load_models():
+    Model().load_model()
+    click.echo(command_txt.get_success_message('migration'))

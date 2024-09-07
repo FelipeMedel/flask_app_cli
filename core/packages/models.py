@@ -5,15 +5,18 @@ from core.utilities.manage_json import read_json, write_json
 
 class Model:
 
-    def __init__(self, table_name: str, path: str = 'src/migrations'):
+    def __init__(self, table_name: str = '', path: str = 'src/migrations'):
         self.__table_name = table_name
         self.__path = path
         self.__default_models = 'models.json'
+        self.__default_versions = 'versions'
         self.__create_dir()
 
-    def __create_dir(self):
-        if not os.path.isdir(self.__path):
-            os.mkdir(self.__path)
+    def __create_dir(self, path: str = ''):
+        path = self.__path + (f'/{path}' if path else '')
+        if not os.path.isdir(path):
+            os.mkdir(path)
+            print(Fore.GREEN + 'Se creó el siguiente directorio en el proyecto ' + Fore.WHITE + path)
 
     def __create_file(self, content: str = ''):
         path = self.__path + '/' + self.__default_models
@@ -53,10 +56,9 @@ class Model:
         write_json(path=path, data=data)
 
     def load_model(self):
-        """
-        Carga y crea un modelo tomando como referencia un archivo JSON
-        """
-        pass
+        self.__create_dir(path=self.__default_versions)
+        # TODO: pendiente por procesar el archivo models.json y generar el archivo de versiones,
+        #  como también el método para generar el código del modelo
 
     def show_migration_models(self, _all: bool = False):
         data = read_json(path=self.__path + '/' + self.__default_models)

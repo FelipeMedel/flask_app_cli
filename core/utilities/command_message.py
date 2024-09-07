@@ -17,9 +17,19 @@ class CommandMessage:
             'nullable': 'Indicates if the column allows null values. (True or False)',
             'default': 'indicates the default value of the field',
             'comment': 'Allows you to add a comment to the field',
+            'loadModel': 'Generate in code the models created in the json file as well as the migration files',
+            'generate': 'Generate the models created in the migration files (Default False)',
         }
         self.__ERRORS = {
-            'name': 'Please provide all required arguments: Project name (--name)'
+            'name': 'Please provide all required arguments: Project name (--name)',
+            'tableName': 'Please provide all required arguments: Table name (--tablename)',
+            'required': 'Please provide all required arguments',
+        }
+        self.__SUCCESS = {
+            'migration': 'The migration files have been created and all models have been generated.'
+        }
+        self.__MODELS = {
+            'addField': "New field added: {field} on table: {table}"
         }
 
     def get_command_text(self, command: str):
@@ -27,3 +37,15 @@ class CommandMessage:
 
     def get_error_message(self, command: str):
         return self.__ERRORS.get(command, 'Command not found')
+
+    def get_success_message(self, command: str):
+        return self.__SUCCESS.get(command, 'Command not found')
+
+    def get_model_message(self, command: str, **params):
+        field = params.get('field')
+        table = params.get('table')
+        response = self.__SUCCESS.get(command, 'Command not found')
+        if field and table:
+            response = response.replace('{field}', field)
+            response = response.replace('{table}', table)
+        return response
