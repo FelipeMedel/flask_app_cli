@@ -19,6 +19,8 @@ class CommandMessage:
             'comment': 'Allows you to add a comment to the field',
             'loadModel': 'Generate in code the models created in the json file as well as the migration files',
             'generate': 'Generate the models created in the migration files (Default False)',
+            'baseModel': 'Generate base model',
+            'id': 'Add field id primary key for model all',
         }
         self.__ERRORS = {
             'name': 'Please provide all required arguments: Project name (--name)',
@@ -29,7 +31,8 @@ class CommandMessage:
             'migration': 'The migration files have been created and all models have been generated.'
         }
         self.__MODELS = {
-            'addField': "New field added: {field} on table: {table}"
+            'addField': "New field added: {field} on table: {table}",
+
         }
 
     def get_command_text(self, command: str):

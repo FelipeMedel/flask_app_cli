@@ -4,3 +4,4 @@ from .config_template import ConfigTemplate
 from .application_template import ApplicationTemplate
 from .database_template import DatabaseTemplate
 from .documentation_template import DocumentationTemplate
+from .model_template import ModelTemplate

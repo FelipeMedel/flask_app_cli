@@ -1,7 +1,8 @@
 import click
 from main import cli
 from core.packages import Model
-from core.utilities import Credits, CommandMessage
+from core.utilities import (Credits,
+                            CommandMessage)
 
 command_txt = CommandMessage()
 
@@ -15,14 +16,20 @@ def get_models(tablename, all):
     Model(table_name=tablename).show_migration_models(_all=all)
 
 
+@cli.command('base-model', help=command_txt.get_command_text('baseModel'))
+@click.option('--id', '-p', required=False, type=bool, default=True, help=command_txt.get_command_text('id'))
+def generate_base_model(id):
+    Model(**{'id': id}).generate_base_model()
+
+
 @cli.command('new-model', help=command_txt.get_command_text('newModel'))
-@click.option('--tablename', required=True, help=command_txt.get_command_text('tableName'))
-@click.option('--key', required=True, help=command_txt.get_command_text('key'))
-@click.option('--primary', required=False, type=bool, help=command_txt.get_command_text('primary'))
-@click.option('--type', required=True, help=command_txt.get_command_text('type'))
-@click.option('--nullable', required=True, type=bool, help=command_txt.get_command_text('nullable'))
-@click.option('--default', required=False, help=command_txt.get_command_text('nullable'))
-@click.option('--comment', required=False, help=command_txt.get_command_text('comment'))
+@click.option('--tablename', '-tb', required=True, help=command_txt.get_command_text('tableName'))
+@click.option('--key', '-k', required=True, help=command_txt.get_command_text('key'))
+@click.option('--primary', '-p', required=False, type=bool, help=command_txt.get_command_text('primary'))
+@click.option('--type', '-t', required=True, help=command_txt.get_command_text('type'))
+@click.option('--nullable', '-n', required=True, type=bool, help=command_txt.get_command_text('nullable'))
+@click.option('--default', '-d', required=False, help=command_txt.get_command_text('nullable'))
+@click.option('--comment', '-c', required=False, help=command_txt.get_command_text('comment'))
 def new_model(tablename, key, primary, type, nullable, default, comment):
     if not tablename or not key or not type or not nullable:
         click.Abort(command_txt.get_error_message('required') + " (--tablename, --key, --type, --nullable)")

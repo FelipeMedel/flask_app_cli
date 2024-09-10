@@ -1,13 +1,16 @@
 import os
 from colorama import Fore
+from core.utilities import PathFiles
 from core.utilities.manage_json import read_json, write_json
+from assets import ModelTemplate
 
 
 class Model:
 
-    def __init__(self, table_name: str = '', path: str = 'src/migrations'):
+    def __init__(self, table_name: str = '', path: str = 'src/migrations', **params: dict):
         self.__table_name = table_name
         self.__path = path
+        self.__params = params
         self.__default_models = 'models.json'
         self.__default_versions = 'versions'
         self.__create_dir()
@@ -18,8 +21,9 @@ class Model:
             os.mkdir(path)
             print(Fore.GREEN + 'Se creó el siguiente directorio en el proyecto ' + Fore.WHITE + path)
 
-    def __create_file(self, content: str = ''):
-        path = self.__path + '/' + self.__default_models
+    def __create_file(self, path: str = '', content: str = ''):
+        if path == '':
+            path = self.__path + '/' + self.__default_models
         if content != '':
             with open(f'{path}', "w", encoding='utf-8') as f:
                 f.write(content.encode('utf-8').decode())
@@ -28,6 +32,11 @@ class Model:
         else:
             open(f'{path}', "w").close()
             print(Fore.GREEN + 'Se ha creado el siguiente archivo. ' + Fore.WHITE + f'{path}')
+
+    def generate_base_model(self):
+        path = PathFiles(dir_name='models').get_root_dir()
+        content = ModelTemplate(**{'id': self.__params.get('id', False)}).get_content_base_model()
+        self.__create_file(path=path, content=content)
 
     def create_migration_model(self, key, primary, _type, nullable, default, comment):
         path = self.__path + '/' + self.__default_models
