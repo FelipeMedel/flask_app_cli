@@ -17,6 +17,4 @@ class PathFiles:
                         and fichero.name not in exclude_dir):
                     end_route += f'/{fichero.name}'
                     first_record = True
-                if fichero.is_dir():
-                    print(fichero.name)
         return f'{end_route}/{self.__dir_name}'

@@ -17,6 +17,7 @@ class CommandMessage:
             'nullable': 'Indicates if the column allows null values. (True or False)',
             'default': 'indicates the default value of the field',
             'comment': 'Allows you to add a comment to the field',
+            'update': 'Modify or overwrite the field in the model',
             'loadModel': 'Generate in code the models created in the json file as well as the migration files',
             'generate': 'Generate the models created in the migration files (Default False)',
             'baseModel': 'Generate base model',
@@ -32,7 +33,8 @@ class CommandMessage:
         }
         self.__MODELS = {
             'addField': "New field added: {field} on table: {table}",
-
+            'existField': "There is already field: {field} on table: {table}",
+            'updateField': "The field has been modified: {field} on table: {table}",
         }
 
     def get_command_text(self, command: str):
@@ -47,7 +49,7 @@ class CommandMessage:
     def get_model_message(self, command: str, **params):
         field = params.get('field')
         table = params.get('table')
-        response = self.__SUCCESS.get(command, 'Command not found')
+        response = self.__MODELS.get(command, 'Command not found')
         if field and table:
             response = response.replace('{field}', field)
             response = response.replace('{table}', table)

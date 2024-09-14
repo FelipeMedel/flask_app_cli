@@ -92,7 +92,7 @@ class ModelTemplate:
         content += '\t\t\tdb.session.delete(self)\n'
         content += '\t\t\tdb.session.commit()\n'
         content += '\t\texcept Exception as e:\n'
-        content += "\t\t\tprint(f'Error DELETE: {e}')"
+        content += "\t\t\tprint(f'Error DELETE: {e}')\n"
         content += '\t\t\tdb.session.rollback()\n'
         content += '\n'
         content += '\tdef save(self, commit: bool =True):\n'
@@ -103,7 +103,7 @@ class ModelTemplate:
         content += '\t\t\t\tdb.session.commit()\n'
         content += '\t\t\treturn self\n'
         content += '\t\texcept Exception as e:\n'
-        content += "\t\t\tprint(f'Error SAVE: {e}')"
+        content += "\t\t\tprint(f'Error SAVE: {e}')\n"
         content += '\t\t\tdb.session.rollback()\n'
         content += '\n'
         content += '\tdef save_all(self: Union[List]):\n'
@@ -112,7 +112,7 @@ class ModelTemplate:
         content += '\t\t\tdb.session.flush()\n'
         content += '\t\t\tdb.session.commit()\n'
         content += '\t\texcept Exception as e:\n'
-        content += "\t\t\tprint(f'Error SAVE_ALL: {e}')"
+        content += "\t\t\tprint(f'Error SAVE_ALL: {e}')\n"
         content += '\t\t\tdb.session.rollback()\n'
         content += '\n'
         return content

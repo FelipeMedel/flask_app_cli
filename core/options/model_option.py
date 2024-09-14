@@ -30,17 +30,21 @@ def generate_base_model(id):
 @click.option('--nullable', '-n', required=True, type=bool, help=command_txt.get_command_text('nullable'))
 @click.option('--default', '-d', required=False, help=command_txt.get_command_text('nullable'))
 @click.option('--comment', '-c', required=False, help=command_txt.get_command_text('comment'))
-def new_model(tablename, key, primary, type, nullable, default, comment):
+@click.option('--update', '-u', required=False, type=bool, default=False, help=command_txt.get_command_text('update'))
+def new_model(tablename, key, primary, type, nullable, default, comment, update):
     if not tablename or not key or not type or not nullable:
         click.Abort(command_txt.get_error_message('required') + " (--tablename, --key, --type, --nullable)")
 
-    Model(table_name=tablename).create_migration_model(key=key,
-                                                       primary=primary,
-                                                       _type=type,
-                                                       nullable=nullable,
-                                                       default=default,
-                                                       comment=comment)
-    click.echo(command_txt.get_model_message(command='addField', **{'field': key, 'table': tablename}))
+    is_new = Model(table_name=tablename, **{'update': update}).create_migration_model(key=key,
+                                                                                      primary=primary,
+                                                                                      _type=type,
+                                                                                      nullable=nullable,
+                                                                                      default=default,
+                                                                                      comment=comment)
+    command_response = 'addField' if is_new else 'existField'
+    if update:
+        command_response = 'updateField'
+    click.echo(command_txt.get_model_message(command=command_response, **{'field': key, 'table': tablename}))
 
 
 @cli.command('load-model', help=command_txt.get_command_text('loadModel'))

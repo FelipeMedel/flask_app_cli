@@ -2,7 +2,7 @@ import os
 from colorama import Fore
 from core.utilities import PathFiles
 from core.utilities.manage_json import read_json, write_json
-from assets import ModelTemplate
+from .assets import ModelTemplate
 
 
 class Model:
@@ -25,7 +25,7 @@ class Model:
         if path == '':
             path = self.__path + '/' + self.__default_models
         if content != '':
-            with open(f'{path}', "w", encoding='utf-8') as f:
+            with open(f'{path}', "a", encoding='utf-8') as f:
                 f.write(content.encode('utf-8').decode())
                 f.close()
             print(Fore.WHITE + 'El archivo ' + Fore.GREEN + f'{path}' + Fore.WHITE + ' fue modificado!')
@@ -36,7 +36,8 @@ class Model:
     def generate_base_model(self):
         path = PathFiles(dir_name='models').get_root_dir()
         content = ModelTemplate(**{'id': self.__params.get('id', False)}).get_content_base_model()
-        self.__create_file(path=path, content=content)
+        self.__create_file(path=path + '/base_model.py', content=content)
+        self.__create_file(path=path + '/__init__.py', content='from .base_model import BaseModel\n')
 
     def create_migration_model(self, key, primary, _type, nullable, default, comment):
         path = self.__path + '/' + self.__default_models
@@ -54,8 +55,21 @@ class Model:
             if self.__table_name in model:
                 is_exist = True
                 break
+
+        is_new = False
         if is_exist:
-            data[self.__table_name].append(new_table)
+            exist_field = [x for x in data[self.__table_name] if x['key'] == new_table['key']]
+            if len(exist_field) == 0:
+                data[self.__table_name].append(new_table)
+                is_new = True
+            elif self.__params.get('update', False):
+                for model in data[self.__table_name]:
+                    if model['key'] == new_table['key']:
+                        model['primary'] = new_table['primary']
+                        model['type'] = new_table['type']
+                        model['nullable'] = new_table['nullable']
+                        model['default'] = new_table['default']
+                        model['comment'] = new_table['comment']
         else:
             result = {
                 self.__table_name: [new_table]
@@ -63,6 +77,7 @@ class Model:
             data.update(result)
         data[self.__table_name] = sorted(data[self.__table_name], key=lambda x: x['key'])
         write_json(path=path, data=data)
+        return is_new
 
     def load_model(self):
         self.__create_dir(path=self.__default_versions)
