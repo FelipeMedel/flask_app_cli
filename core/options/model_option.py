@@ -50,6 +50,6 @@ def new_model(tablename, key, primary, type, nullable, default, comment, update)
 @cli.command('load-model', help=command_txt.get_command_text('loadModel'))
 @click.option('--generate', '-g', required=False, type=bool, default=False,
               help=command_txt.get_command_text('generate'))
-def load_models():
-    Model().load_model()
+def load_models(generate):
+    Model(**{'generate': generate}).load_model()
     click.echo(command_txt.get_success_message('migration'))
