@@ -1,6 +1,6 @@
 import os
 from colorama import Fore
-from core.utilities import PathFiles
+from core.utilities import PathFiles, GeneratorHash
 from core.utilities.manage_json import read_json, write_json
 from .assets import ModelTemplate
 
@@ -11,7 +11,8 @@ class Model:
         self.__table_name = table_name
         self.__path = path
         self.__params = params
-        self.__default_models = 'models.json'
+        self.__hash_name = GeneratorHash().get_hash()
+        self.__default_models = f'models.json'
         self.__default_versions = 'versions'
         self.__create_dir()
 
@@ -21,14 +22,26 @@ class Model:
             os.mkdir(path)
             print(Fore.GREEN + 'Se creó el siguiente directorio en el proyecto ' + Fore.WHITE + path)
 
+    def __create_file_empty(self, path: str = '', file_name: str = '__init__.py'):
+        if path == '':
+            path = self.__path + '/' + self.__default_models
+        open(f'{path}/{file_name}', "w").close()
+        print(Fore.GREEN + 'Se ha creado el siguiente archivo. ' + Fore.WHITE + f'{path}/{file_name}')
+
     def __create_file(self, path: str = '', content: str = ''):
         if path == '':
             path = self.__path + '/' + self.__default_models
         if content != '':
-            with open(f'{path}', "a", encoding='utf-8') as f:
-                f.write(content.encode('utf-8').decode())
-                f.close()
-            print(Fore.WHITE + 'El archivo ' + Fore.GREEN + f'{path}' + Fore.WHITE + ' fue modificado!')
+            try:
+                with open(f'{path}', "a", encoding='utf-8') as f:
+                    f.write(content.encode('utf-8').decode())
+                    f.close()
+                print(Fore.WHITE + 'El archivo ' + Fore.GREEN + f'{path}' + Fore.WHITE + ' fue modificado!')
+            except:
+                new_file_path = path.split('/')
+                print(path)
+                self.__create_file_empty(path=new_file_path[0], file_name=new_file_path[1])
+                self.__create_file(path=path, content=content)
         else:
             open(f'{path}', "w").close()
             print(Fore.GREEN + 'Se ha creado el siguiente archivo. ' + Fore.WHITE + f'{path}')
@@ -48,7 +61,9 @@ class Model:
             "type": _type,
             "nullable": nullable,
             "default": default,
-            "comment": comment
+            "comment": comment,
+            "generate": False,
+            "generationDate": None
         }
         is_exist = False
         for model in data:
@@ -81,6 +96,16 @@ class Model:
 
     def load_model(self):
         self.__create_dir(path=self.__default_versions)
+        script_content = ''
+        data_models = read_json(path=self.__path + '/' + self.__default_models)
+
+        tables = data_models.keys()
+        for model in tables:
+            script_content += ModelTemplate(table_name=model, **{'fields': data_models[model]}).create_table_for_script()
+
+        if script_content:
+            self.__create_file(path=self.__path + '/' + self.__default_versions + f'/script_{self.__hash_name}.sql',
+                               content=script_content)
         # TODO: pendiente por procesar el archivo models.json y generar el archivo de versiones,
         #  como también el método para generar el código del modelo
 

@@ -25,7 +25,7 @@ def generate_base_model(id):
 @cli.command('new-model', help=command_txt.get_command_text('newModel'))
 @click.option('--tablename', '-tb', required=True, help=command_txt.get_command_text('tableName'))
 @click.option('--key', '-k', required=True, help=command_txt.get_command_text('key'))
-@click.option('--primary', '-p', required=False, type=bool, help=command_txt.get_command_text('primary'))
+@click.option('--primary', '-p', required=False, type=bool, default=False, help=command_txt.get_command_text('primary'))
 @click.option('--type', '-t', required=True, help=command_txt.get_command_text('type'))
 @click.option('--nullable', '-n', required=True, type=bool, help=command_txt.get_command_text('nullable'))
 @click.option('--default', '-d', required=False, help=command_txt.get_command_text('nullable'))

@@ -7,11 +7,19 @@ class ModelTemplate:
         self.__params: dict = params
 
     def __create_table(self):
-        script = f"""create table if not exist {self.__table_name}"""
-        script += '(\n'
-        for column in self.__params:
+        script = f"""create table if not exist {self.__table_name} """
+        script += '\n(\n'
+        data = self.__params.get('fields', [])
+        first_lap = True
+        for column in data:
+            if len(data) > 1 and not first_lap:
+                script += ',\n'
+
+            if first_lap:
+                first_lap = False
+
             if column['primary']:
-                script += f"{column['key']} INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Llave primaria',\n"
+                script += f"\t{column['key']} INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Llave primaria'"
             else:
                 default = ''
                 comment = ''
@@ -22,8 +30,8 @@ class ModelTemplate:
                     nullable = 'NOT NULL'
                 if column['comment']:
                     comment = f"COMMENT '{column['comment']}'"
-                script += f'{column["key"]} {column["type"]} {nullable} {default} {comment},\n'
-        script += ');\n'
+                script += f'\t{column["key"]} {column["type"]} {nullable} {default} {comment}'
+        script += '\n);\n'
         return script
 
     @staticmethod
@@ -36,22 +44,37 @@ class ModelTemplate:
         return 'Integer'
 
     @staticmethod
-    def __get_import_types(columns: dict):
-        response = ''
-        # TODO: pendiente por agregar las otras importaciones al final del response
-        #  para los casos especiales como TEXT, JSON, LONGTEXT entre otros
+    def __get_import_types(columns: dict, _type: str = 'standard'):
+        response = {}
         for column in columns:
-            if 'varchar' in column['type'].lower():
-                response += 'String'
-            elif 'int' in column['type'].lower():
-                response += 'Integer'
-            elif 'datetime' in column['type'].lower() or 'date' in column['type'].lower():
-                response += 'DateTime'
-        return response
+            column_type = column['type'].lower()
+            if 'varchar' in column_type:
+                response['standard'].append('String')
+            elif 'int' in column_type:
+                response['standard'].append('Integer')
+            elif 'datetime' in column_type or 'date' in column_type:
+                response['standard'].append('DateTime')
+            elif 'text' in column_type:
+                response['special'].append('TEXT')
+            elif 'longtext' in column_type:
+                response['special'].append('LONGTEXT')
+            elif 'json' in column_type:
+                response['special'].append('JSON')
+            elif 'tinyint' in column_type:
+                response['special'].append('TINYINT')
+
+        result = ''
+        if len(response) > 0:
+            if _type == 'standard':
+                result = f', {", ".join(response[_type])}'
+            elif _type == 'special':
+                result = f'from sqlalchemy.dialects.mysql import {", ".join(response[_type])}'
+        return result
 
     def __get_content_model(self, table_name: str, columns: dict):
         # TODO: pendiente por validar si se creó el base model o si el modelo es creado con db.model
-        content = f'from sqlalchemy import Column, {self.__get_import_types(columns)}\n'
+        content = f'from sqlalchemy import Column, {self.__get_import_types(columns=columns)}\n'
+        content += f'{self.__get_import_types(columns=columns, _type="special")}\n'
         content += 'from . import BaseModel\n'
         content += '\n\n'
         model_name = table_name.replace('_', '').title()
