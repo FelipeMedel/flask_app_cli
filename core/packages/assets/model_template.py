@@ -41,18 +41,35 @@ class ModelTemplate:
             return f'String{size}'
         elif 'date' in _type or 'datetime' in _type:
             return 'DateTime'
+        elif _type.upper() in ('JSON', 'TEXT', 'LONGTEXT', 'TINYINT'):
+            return _type.upper()
         return 'Integer'
 
     @staticmethod
     def __get_import_types(columns: dict, _type: str = 'standard'):
-        response = {}
+        response = {
+            'standard': [],
+            'special': []
+        }
         for column in columns:
             column_type = column['type'].lower()
+
+            if column_type.upper() in response[_type]:
+                continue
+
             if 'varchar' in column_type:
+                if 'String' in response[_type]:
+                    continue
                 response['standard'].append('String')
-            elif 'int' in column_type:
+            elif 'int' in column_type and column['primary']:
+                continue
+            elif 'int' == column_type:
+                if 'Integer' in response[_type]:
+                    continue
                 response['standard'].append('Integer')
             elif 'datetime' in column_type or 'date' in column_type:
+                if 'DateTime' in response[_type]:
+                    continue
                 response['standard'].append('DateTime')
             elif 'text' in column_type:
                 response['special'].append('TEXT')
@@ -64,41 +81,48 @@ class ModelTemplate:
                 response['special'].append('TINYINT')
 
         result = ''
-        if len(response) > 0:
+        if len(response[_type]) > 0:
             if _type == 'standard':
-                result = f', {", ".join(response[_type])}'
+                result = f'{", ".join(response[_type])}'
             elif _type == 'special':
                 result = f'from sqlalchemy.dialects.mysql import {", ".join(response[_type])}'
         return result
 
-    def __get_content_model(self, table_name: str, columns: dict):
-        # TODO: pendiente por validar si se creó el base model o si el modelo es creado con db.model
+    def __get_content_model(self):
+        columns = self.__params.get('fields', dict())
+        with_base_model = self.__params.get('withBaseModel')
         content = f'from sqlalchemy import Column, {self.__get_import_types(columns=columns)}\n'
         content += f'{self.__get_import_types(columns=columns, _type="special")}\n'
-        content += 'from . import BaseModel\n'
+        if with_base_model:
+            content += 'from . import BaseModel\n'
+        else:
+            root_path = self.__params.get('rootPath', 'app')
+            content += f'from {root_path} import db\n'
         content += '\n\n'
-        model_name = table_name.replace('_', '').title()
-        content += f'class {model_name}Model(BaseModel):\n'
+        model_name = self.__table_name.title().replace('_', '')
+        if with_base_model:
+            content += f'class {model_name}Model(BaseModel):\n'
+        else:
+            content += f'class {model_name}Model(db.Model):\n'
         content += '\n'
-        content += f'\t__tablename__ = "{table_name}"\n'
+        content += f'\t__tablename__ = "{self.__table_name}"\n'
         content += '\n'
         for column in columns:
+            if with_base_model and column['primary']:
+                continue
+
             content += (f"\t{column['key']} = Column({self.__get_column_type(_type=column['type'])}, "
-                        f"nullable={column['nullable']}, default='{column['default']}', "
-                        f"comment='{column['comment']}')\n")
+                        f"nullable={column['nullable']}")
+            if column['nullable']:
+                if column['default'] == 'null':
+                    column['default'] = None
+                content += f", default={column['default']}"
+            if column['comment']:
+                content += f", comment='{column['comment']}'"
+            content += ")\n"
+
         content += '\n'
         return content
-
-    def __option_field_for_column(self):
-        # TODO: pendiente retornar la información para crear los archivos
-        tables = self.__params.get('tables', {})
-        response = {}
-        model_content = ''
-        for table in tables.keys():
-            for column in tables[table]:
-                model_content = self.__get_content_model(table_name=table, columns=column)
-            response[table] = model_content
-        return response
 
     def get_content_base_model(self):
         content = 'from typing import Union, List\n'
@@ -142,3 +166,6 @@ class ModelTemplate:
 
     def create_table_for_script(self):
         return self.__create_table()
+
+    def get_content_model_in_code(self):
+        return self.__get_content_model()

@@ -28,12 +28,12 @@ class Model:
         open(f'{path}/{file_name}', "w").close()
         print(Fore.GREEN + 'Se ha creado el siguiente archivo. ' + Fore.WHITE + f'{path}/{file_name}')
 
-    def __create_file(self, path: str = '', content: str = ''):
+    def __create_file(self, path: str = '', content: str = '', action: str = 'a'):
         if path == '':
             path = self.__path + '/' + self.__default_models
         if content != '':
             try:
-                with open(f'{path}', "a", encoding='utf-8') as f:
+                with open(f'{path}', action, encoding='utf-8') as f:
                     f.write(content.encode('utf-8').decode())
                     f.close()
                 print(Fore.WHITE + 'El archivo ' + Fore.GREEN + f'{path}' + Fore.WHITE + ' fue modificado!')
@@ -47,7 +47,7 @@ class Model:
             print(Fore.GREEN + 'Se ha creado el siguiente archivo. ' + Fore.WHITE + f'{path}')
 
     def generate_base_model(self):
-        path = PathFiles(dir_name='models').get_root_dir()
+        path = PathFiles(dir_name='models').get_path_with_root_dir()
         content = ModelTemplate(**{'id': self.__params.get('id', False)}).get_content_base_model()
         self.__create_file(path=path + '/base_model.py', content=content)
         self.__create_file(path=path + '/__init__.py', content='from .base_model import BaseModel\n')
@@ -94,20 +94,53 @@ class Model:
         write_json(path=path, data=data)
         return is_new
 
+    @staticmethod
+    def __get_data_env(path: str):
+        response = ''
+        with open(path, 'r', encoding="utf-8") as file:
+            for line in file:
+                if 'DB_NAME' in line:
+                    response = (line.split('=')[1]
+                                .replace('"', '')
+                                .replace(' ', '_')
+                                .replace('\n', '')
+                                )
+                    break
+        return response
+
     def load_model(self):
         self.__create_dir(path=self.__default_versions)
         script_content = ''
         data_models = read_json(path=self.__path + '/' + self.__default_models)
+        # TODO: pendiente consultar la cantidad de versiones generadas para agregar un identificado numérico
+        #   secuencias que comience en _1
+        file_name = self.__path + '/' + self.__default_versions + f'/script_{self.__hash_name}.sql'
+        database_name = self.__get_data_env(path='src/.env')
+        self.__create_file(path=file_name, content=f'USE DATABASE {database_name};\n\n')
 
         tables = data_models.keys()
         for model in tables:
-            script_content += ModelTemplate(table_name=model, **{'fields': data_models[model]}).create_table_for_script()
+            script_content += (ModelTemplate(table_name=model, **{'fields': data_models[model]})
+                               .create_table_for_script())
 
         if script_content:
-            self.__create_file(path=self.__path + '/' + self.__default_versions + f'/script_{self.__hash_name}.sql',
-                               content=script_content)
-        # TODO: pendiente por procesar el archivo models.json y generar el archivo de versiones,
-        #  como también el método para generar el código del modelo
+            self.__create_file(path=file_name, content=script_content)
+        if self.__params.get('generate', False):
+            exist_base_model, path_base_model = (PathFiles(dir_name='models')
+                                                 .get_file_for_path(file_name='base_model.py'))
+            path = PathFiles(dir_name='models').get_root_dir()
+            for model in tables:
+                params = {
+                    'fields': data_models[model],
+                    'withBaseModel': exist_base_model,
+                    'rootPath': PathFiles().get_root_path()
+                }
+                model_content = (ModelTemplate(table_name=model, **params)
+                                 .get_content_model_in_code())
+                self.__create_file(path=f'{path}/{model.lower()}_model.py', content=model_content, action='w')
+                # TODO: pendiente validar si la importación ya existe en el archivo __init__.py del package models
+                import_text = f'from .{model.lower()}_model import {model.title().replace("_", "")}Model\n'
+                self.__create_file(path=f'{path}/__init__.py', content=import_text)
 
     def show_migration_models(self, _all: bool = False):
         data = read_json(path=self.__path + '/' + self.__default_models)
