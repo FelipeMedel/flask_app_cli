@@ -47,7 +47,7 @@ class Model:
             print(Fore.GREEN + 'Se ha creado el siguiente archivo. ' + Fore.WHITE + f'{path}')
 
     def generate_base_model(self):
-        path = PathFiles(dir_name='models').get_path_with_root_dir()
+        path = PathFiles(dir_name='models').get_root_dir()
         content = ModelTemplate(**{'id': self.__params.get('id', False)}).get_content_base_model()
         self.__create_file(path=path + '/base_model.py', content=content)
         self.__create_file(path=path + '/__init__.py', content='from .base_model import BaseModel\n')
