@@ -52,17 +52,39 @@ class ApplicationTemplate:
         content += "def root_route():\n"
         content += "\tresponse = {'ok': True, 'message': 'Hola Mundo!'}\n"
         content += "\treturn make_response(jsonify(response), 200)\n"
-        content += "\n"
+        content += '\n\n'
+        if self.__with_sql:
+            content += '@application.teardown_request\n'
+            content += 'def remove_session(param):\n'
+            content += '\tdb.session.remove()\n'
         return content
 
     def get_content_blueprint_file(self):
-        content = 'from flask import Blueprint\n'
+        imports = ''
+        if self.__with_sql and self.__multitenant:
+            imports = ', jsonify, make_response, request'
+        content = f'from flask import Blueprint{imports}\n'
+        if self.__with_sql and self.__multitenant:
+            content += f'from werkzeug.exceptions import BadRequest\n'
+            content += f'from {self.__root} import application, db\n'
         content += '\n\n'
         content += "api_bp = Blueprint('api_bp', __name__)\n"
         content += '\n\n'
         content += '@api_bp.before_request\n'
         content += 'def before_request():\n'
-        content += '\tpass\n'
+        if self.__with_sql and self.__multitenant:
+            content += '\tif request.method != "OPTIONS":\n'
+            content += '\t\ttenant = request.headers.get("Database")\n'
+            content += '\t\tif not tenant:\n'
+            content += '\t\t\traise BadRequest("No ha enviado el parámetro tenant en los headers")\n'
+            content += '\t\ttry:\n'
+            content += '\t\t\tfrom database import DBTenant\n'
+            content += '\t\t\tdb.session = DBTenant(app=application).get_tenant_session(tenant_name=request.headers.get("Database"))\n'
+            content += '\t\texcept Exception as e:\n'
+            content += "\t\t\tresponse = dict(message='Error al intentar consultar la base de datos seleccionada.')\n"
+            content += "\t\t\treturn make_response(jsonify(response), 500)\n"
+        else:
+            content += '\tpass\n'
         content += '\n\n'
         content += '@api_bp.after_request\n'
         content += 'def after_request(response):\n'
@@ -87,7 +109,7 @@ class ApplicationTemplate:
         content += "\n"
         return content
 
-    def get_content_middleware_tenant(self):
+    def get_content_tenant(self):
         content = 'from flask import request, make_response, jsonify, g\n'
         content += f'from werkzeug.exceptions import BadRequest\n'
         content += f'from {self.__root} import application, db\n'
@@ -95,19 +117,15 @@ class ApplicationTemplate:
         content += '@application.before_request\n'
         content += 'def tenant_middleware():\n'
         content += '\tif request.method != "OPTIONS":\n'
-        content += '\t\tg.tenant = request.headers.get("Database")\n'
-        content += '\t\tif not g.tenant:\n'
+        content += '\t\ttenant = request.headers.get("Database")\n'
+        content += '\t\tif not tenant:\n'
         content += '\t\t\traise BadRequest("No ha enviado el parámetro tenant en los headers")\n'
         content += '\t\ttry:\n'
         content += '\t\t\tfrom database import DBTenant\n'
-        content += '\t\t\tdb.session = DBTenant(app=application).get_tenant_session(tenant_name=g.tenant)\n'
+        content += '\t\t\tdb.session = DBTenant(app=application).get_tenant_session(tenant_name=request.headers.get("Database"))\n'
         content += '\t\texcept Exception as e:\n'
         content += "\t\t\tresponse = dict(message='Error al intentar consultar la base de datos seleccionada.')\n"
         content += "\t\t\treturn make_response(jsonify(response), 500)\n"
-        content += '\n\n'
-        content += '@application.teardown_request\n'
-        content += 'def remove_session(param):\n'
-        content += '\tdb.session.remove()\n'
         return content
 
     def get_content_middleware_error(self):

@@ -150,11 +150,9 @@ class Infrastructure:
                                           content='from . import test_controller')
                     elif 'middlewares' in route:
                         import_content = 'from . import error_handler_middleware\n'
-                        if self.__multitenant and self.__with_db:
-                            import_content += 'from . import tenant_middleware\n'
-                            self.__write_file(path=f'{route}/tenant_middleware.py', content=application.get_content_middleware_tenant())
                         self.__write_file(path=f'{route}/__init__.py', content=import_content)
-                        self.__write_file(path=f'{route}/error_handler_middleware.py', content=application.get_content_middleware_error())
+                        self.__write_file(path=f'{route}/error_handler_middleware.py',
+                                          content=application.get_content_middleware_error())
 
             # writer api blueprint
             self.__write_file(path=f'{self.__root_name}/{self.__root}/blueprints/api_bp.py',
